@@ -1,0 +1,63 @@
+---
+title: "Changing Formats"
+author: "Niel Infante"
+date: "6/5/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+This is an outline of some of the common data formats in microbiome work, and how to change between them.
+
+### OTU Table
+
+The OTU table is the basic file format for many analyses, and is the major link between raw sequence and downstream analysis. At its core, the ORU table is simply a matrix of counts, with each row being the different OTUs, and each column the different samples.
+
+| OTU | Sample_1 | Sample_2 | Sample_3|
+| OTU_1 | 47 | 16 | 845 |
+| OTU_2 | 387 | 0 | 0 |
+| OTU_3 | 0 | 7889 | 23 |
+
+It is common to refer to this an an OTU table even when you do not have OTUs, but rather ASVs, taxa or gene counts
+
+
+This table is in dense format, meaning there is an entry for every OTU for every sample. This can lead to many entries of 0, and it is sometimes usefull to have the table in sparse format, which omits all 0 entries.
+
+To convert from dense to sparse, use tidyr::gather. To go from sparse to dense, use tidyr::spread
+
+```{r}
+ 
+otu.table <- data.frame(OTU=c('OTU_1','OTU_2','OTU_3'), Sample_1=c(47,387,0), Sample_2=c(16,0,7889), Sample_3=c(845,0,0))
+
+otu.table
+
+
+sparse.otu.table <- gather(otu.table, Sample, Count, -OTU) %>% filter(Count != 0)
+
+
+sparse.otu.table
+
+spread(sparse.otu.table, Sample, Count, fill=0, convert=F)
+
+
+```
+
+
+
+### Biom
+
+Many tools output or require ata in biom format. There are actually several different file formats that are all called biom.
+
+
+
+biom tables.
+
+
+mothur output
+mgrast
+phinch
+phyoseq
+
